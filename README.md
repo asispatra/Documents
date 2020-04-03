@@ -1,3 +1,4 @@
 # Documents
 
-* [lubuntu](lubuntu)
+* [Lubuntu](lubuntu)
+* [GitHub](github)
