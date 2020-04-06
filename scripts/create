@@ -1,0 +1,114 @@
+#!/bin/bash
+
+#
+# File Name: create
+#
+# Date: 2013-07-30
+# Author: Asis Kumar Patra
+# Purpose: C, CPP, JAVA, SH etc. file creator.
+#
+#
+
+if [ $# -ne 1 ] ; then
+#       echo "Usage: '$0 file-name'"
+#       echo "Usage: 'create <file-name>'"
+        echo "Usage: '`echo $0 | sed 's/.*\///'` <file-name>'"
+        exit 1
+fi
+
+if [ -e $1 ] ; then
+        echo "Error: '$1' already exists!"
+        echo -n "Do you want to continue(y/n)? "
+        read yn
+        if [ "$yn" != "y" -a "$yn" != "Y" ] ; then
+                exit 2
+        fi
+fi
+
+# FL_N: File Name
+# P   : File Path
+
+# F_L : First Line
+# L_L : Last Line
+# L_S : Line Start
+# P_C : Program Code
+# F_N : File Name
+# D   : Date
+# A   : Author
+# P   : Purpose
+# c_n : Class Name for java
+# s_f : Shell Script Flag
+# O_F_N : Only File Name
+
+TS='  '
+FL_N=`echo $1 | sed 's/.*\///'`
+P=`echo $1 | sed 's/\/[^\/]*$//'`
+
+case $FL_N in
+        *.h)    F_L="/*"
+                L_S=" * "
+                L_L=" */"
+                TEMP=`echo $FL_N | tr '.[a-z]' '_[A-Z]'`
+                O_F_N=${FL_N%.*}
+                P_C="#ifndef _${TEMP}\n#define _${TEMP}\n\n#include <stdio.h>\n#include <iostream>\n\nusing namespace std;\n\n/*\nclass $O_F_N\n{\nprivate:\npublic:\n};\n*/\n\n#endif"
+                ;;
+        *.c)    F_L="/*"
+                L_S=" * "
+                L_L=" */"
+                O_F_N=${FL_N%.*}
+                P_C="#include <stdio.h>\n\n/* #include \"$O_F_N.h\" */\n\nint main(int argc, char** argv) {\n${TS}/* Write your program code here. */\n${TS}\n${TS}return 0;\n}\n"
+                ;;
+        *.cpp)  F_L="//"
+                L_S="// "
+                L_L="//"
+                O_F_N=${FL_N%.*}
+                P_C="#include <iostream>\n\nusing namespace std;\n\n// #include \"$O_F_N.h\"\n\nint main(int argc, char** argv) {\n${TS}// Write your program code here. \n${TS}\n${TS}return 0;\n}\n"
+                ;;
+        *.pc)   F_L="//"
+                L_S="// "
+                L_L="//"
+                P_C="#include <iostream>\n#include <cstdlib>\n\nusing namespace std;\n\n#include <sqlca.h>\n\nint main(int argc, char** argv) { \n${TS}\n${TS}EXEC SQL BEGIN DECLARE SECTION;\n${TS}${TS}char h_username[]=\"\";//\"H11OraUser5D@unixdb\";\n${TS}${TS}char h_password[]=\"\";//\"tcshyd\";\n${TS}EXEC SQL END DECLARE SECTION;\n${TS}EXEC SQL CONNECT :h_username IDENTIFIED BY :h_password;\n${TS}int l_connectionStatus = sqlca.sqlcode;\n${TS}if(l_connectionStatus != 0) {\n${TS}${TS}cerr<<\"Error \"<<l_connectionStatus<<\": Database connection failed!\"<<endl;\n${TS}${TS}exit(1);\n${TS}}\n${TS}// Write your program code here. \n${TS}\n${TS}\n${TS}EXEC SQL COMMIT WORK RELEASE;\n${TS}return 0;\n}\n"
+                ;;
+        *.java) F_L="/*"
+                L_S=" * "
+                L_L=" */"
+                c_n=$(echo $FL_N | cut -d "." -f1)
+                P_C="class $c_n {\n${TS}public static void main(String[] args) {\n${TS}${TS}// Write your program code here. \n${TS}${TS}\n${TS}}\n}\n"
+                ;;
+        *.py)   F_L="#!/usr/bin/python\n\n#"
+                L_S="# "
+                L_L="#"
+                P_C="# Write your python code here. \n"
+                s_f="y"
+                ;;
+        *.pl)   F_L="#!/usr/bin/perl\n\n#"
+                L_S="# "
+                L_L="#"
+                P_C="use strict; \nuse warnings; \nuse diagnostics; \n\n# Write your perl script here. \n"
+                ;;
+        *.sh)   F_L="#!/bin/bash\n\n#"
+                L_S="# "
+                L_L="#"
+                P_C="# Write your shell script here. \n"
+                ;;
+        *)      read -p "Is '$1' Shell Script (Y/N)? " s_f
+                if [ -z "$s_f" -o "$s_f" != "Y" -a "$s_f" != "y" ] ; then
+                        echo "Error: wrong entry!!!" ; exit 2
+                else
+                        F_L="#!/bin/bash\n\n#"
+                        L_S="# "
+                        L_L="#"
+                        P_C="# Write your shell script here. \n"
+                fi
+esac
+
+F_N="File Name: $FL_N"
+#D="Date: $(date +%F)"
+D="Date: $(date '+%B %d, %Y')"
+A="Author: Asis Kumar Patra"
+P="Purpose: "
+
+echo -e "$F_L\n$L_S$F_N\n$L_S\n$L_S$D\n$L_S$A\n$L_S$P\n$L_S\n$L_L\n\n$P_C" > $1
+if [ ! -z "$s_f" ] ; then
+        chmod u+x $1
+fi
