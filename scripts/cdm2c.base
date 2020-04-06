@@ -1,0 +1,97 @@
+#!/bin/bash
+
+#
+# File Name: cdm2c
+#
+# Date: April 04, 2020
+# Author: Asis Kumar Patra
+# Purpose: Create *.cdm (Class Data Member) to C++ Class
+#
+#
+
+# Write your shell script here.
+if [ $# -ne 1 ] ; then
+  echo "Usage: '`echo $0 | sed 's/.*\///'` <file-name>'"
+  exit 1
+fi
+
+FILENAME=$1
+
+if [ ! -e $FILENAME ] ; then
+  echo "Error: '$FILENAME' does not exists!"
+  exit 2
+fi
+
+CLASS_NAME=$(echo $FILENAME | sed 's/\.[^.]*$//')
+#echo ${CLASS_NAME}
+
+CPPFILE="${CLASS_NAME}.cpp"
+if [ -e ${CPPFILE} ] ; then
+  echo "Error: '${CPPFILE}' already exists!"
+  echo -n "Do you want to continue(y/n)? "
+  read yn
+  if [ "$yn" != "y" -a "$yn" != "Y" ] ; then
+    exit 3
+  fi
+fi
+
+AUTHOR="Asis Patra"
+
+HEADER="//
+// File Name: ${CPPFILE}
+//
+// Date: $(date '+%B %d, %Y')
+// Author: ${AUTHOR}
+// Purpose:
+//
+//
+"
+
+TS="  "
+
+TEXT=""
+PARAMS=""
+PARAM_INIT=""
+METHOD_DECLARATION=""
+METHODS=""
+
+TEXT="${TEXT}class ${CLASS_NAME} {\n"
+TEXT="${TEXT}${TS}private:\n"
+for DECLARATION in $(cat $FILENAME | tr -s ' ' | tr ' ' '#') ; do
+  DATA_TYPE=$(echo ${DECLARATION} | cut -d '#' -f1)
+  DATA_NAME=$(echo ${DECLARATION} | cut -d '#' -f2)
+  TEXT="${TEXT}${TS}${TS}${DATA_TYPE} ${DATA_NAME};\n"
+  PARAMS="${PARAMS}${DATA_TYPE} ${DATA_NAME}, "
+  PARAM_INIT="${PARAM_INIT}${TS}this->${DATA_NAME} = ${DATA_NAME};\n"
+  # get methods
+  METHOD_NAME="$(tr '[:lower:]' '[:upper:]' <<< ${DATA_NAME:0:1})${DATA_NAME:1}"
+  METHOD_DECLARATION="${METHOD_DECLARATION}${TS}${TS}${DATA_TYPE} get${METHOD_NAME}();\n"
+  METHODS="${METHODS}${DATA_TYPE} ${CLASS_NAME}::get${METHOD_NAME}() {\n"
+  METHODS="${METHODS}${TS}return this->${DATA_NAME};\n"
+  METHODS="${METHODS}}\n\n"
+  # set methods
+  METHOD_DECLARATION="${METHOD_DECLARATION}${TS}${TS}void set${METHOD_NAME}(${DATA_TYPE} ${DATA_NAME});\n"
+  METHODS="${METHODS}void ${CLASS_NAME}::set${METHOD_NAME}(${DATA_TYPE} ${DATA_NAME}) {\n"
+  METHODS="${METHODS}${TS}this->${DATA_NAME} = ${DATA_NAME};\n"
+  METHODS="${METHODS}}\n\n"
+done
+#PARAMS="${PARAMS}\b\b"
+PARAMS=${PARAMS::-2}
+TEXT="${TEXT}${TS}public:\n"
+TEXT="${TEXT}${TS}${TS}${CLASS_NAME}();\n"
+TEXT="${TEXT}${TS}${TS}${CLASS_NAME}($PARAMS);\n"
+TEXT="${TEXT}${METHOD_DECLARATION}"
+TEXT="${TEXT}};\n\n"
+#echo -ne "${TEXT}" > ${CLASS_NAME}.h
+#echo "+++++++++++++++++++++++++++"
+#TEXT=""
+TEXT="${TEXT}${CLASS_NAME}::${CLASS_NAME}() {\n"
+TEXT="${TEXT}}\n\n"
+TEXT="${TEXT}${CLASS_NAME}::${CLASS_NAME}($PARAMS) {\n"
+TEXT="${TEXT}${PARAM_INIT}"
+TEXT="${TEXT}}\n\n"
+TEXT="${TEXT}${METHODS}"
+#TEXT="${TEXT}\n"
+
+echo "${HEADER}" > ${CPPFILE}
+echo -ne "${TEXT}" >> ${CPPFILE}
