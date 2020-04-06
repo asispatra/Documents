@@ -57,6 +57,7 @@ if [ -e ${CPPFILE} ] ; then
 fi
 
 AUTHOR="Asis Patra"
+CAPS_CLASS_NAME=$(echo "${CLASS_NAME}" | tr 'a-z' 'A-Z')
 
 H_HEADER="//
 // File Name: ${HFILE}
@@ -66,6 +67,9 @@ H_HEADER="//
 // Purpose:
 //
 //
+
+#ifndef _${CAPS_CLASS_NAME}_H
+#define _${CAPS_CLASS_NAME}_H
 "
 CPP_HEADER="//
 // File Name: ${CPPFILE}
@@ -116,6 +120,7 @@ TEXT="${TEXT}};\n\n"
 if ${HEADER_FILE} ; then
   echo "${H_HEADER}" > ${HFILE}
   echo -ne "${TEXT}" >> ${HFILE}
+  echo "#endif" >> ${HFILE}
   TEXT=""
 fi
 
