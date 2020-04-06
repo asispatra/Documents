@@ -121,7 +121,7 @@ if ${HEADER_FILE} ; then
   echo "${H_HEADER}" > ${HFILE}
   echo -ne "${TEXT}" >> ${HFILE}
   echo "#endif" >> ${HFILE}
-  TEXT=""
+  TEXT="#include \"${HFILE}\"\n\n"
 fi
 
 TEXT="${TEXT}${CLASS_NAME}::${CLASS_NAME}() {\n"
