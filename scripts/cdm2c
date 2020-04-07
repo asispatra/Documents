@@ -2,14 +2,14 @@
 
 #
 # File Name: cdm2c
-#
+# 
 # Date: April 04, 2020
 # Author: Asis Kumar Patra
 # Purpose: Create *.cdm (Class Data Member) to C++ Class
-#
+# 
 #
 
-# Write your shell script here.
+# Write your shell script here. 
 if [ $# -ne 1 -a $# -ne 2  ] ; then
   echo "Usage: '`echo $0 | sed 's/.*\///'` [-H] <file-name>'"
   exit 1
@@ -64,7 +64,7 @@ H_HEADER="//
 //
 // Date: $(date '+%B %d, %Y')
 // Author: ${AUTHOR}
-// Purpose:
+// Purpose: 
 //
 //
 
@@ -76,7 +76,7 @@ CPP_HEADER="//
 //
 // Date: $(date '+%B %d, %Y')
 // Author: ${AUTHOR}
-// Purpose:
+// Purpose: 
 //
 //
 "
@@ -110,14 +110,16 @@ for DECLARATION in $(cat $FILENAME | tr -s ' ' | tr ' ' '#') ; do
   METHODS="${METHODS}}\n\n"
 done
 #PARAMS="${PARAMS}\b\b"
-PARAMS=${PARAMS::-2}
 TEXT="${TEXT}${TS}public:\n"
 TEXT="${TEXT}${TS}${TS}${CLASS_NAME}();\n"
+if [ "${PARAMS}" != "" ] ; then
+PARAMS=${PARAMS::-2}
 TEXT="${TEXT}${TS}${TS}${CLASS_NAME}($PARAMS);\n"
+fi
 TEXT="${TEXT}${METHOD_DECLARATION}"
 TEXT="${TEXT}};\n\n"
 
-if ${HEADER_FILE} ; then
+if ${HEADER_FILE} ; then 
   echo "${H_HEADER}" > ${HFILE}
   echo -ne "${TEXT}" >> ${HFILE}
   echo "#endif" >> ${HFILE}
@@ -126,9 +128,11 @@ fi
 
 TEXT="${TEXT}${CLASS_NAME}::${CLASS_NAME}() {\n"
 TEXT="${TEXT}}\n\n"
+if [ "${PARAMS}" != "" ] ; then
 TEXT="${TEXT}${CLASS_NAME}::${CLASS_NAME}($PARAMS) {\n"
 TEXT="${TEXT}${PARAM_INIT}"
 TEXT="${TEXT}}\n\n"
+fi
 TEXT="${TEXT}${METHODS}"
 #TEXT="${TEXT}\n"
 
