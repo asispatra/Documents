@@ -23,25 +23,26 @@
 
 source helper.sh
 
-TEST=0 # 1: TRUE, 0: FALSE
+MODE=0 # 0: RUN, 1: TEST, 2: DATA COLLECT
 SLEEP=5
 #JUST_RAN=0 # 1: TRUE, 0: FALSE
 
-iterations=1
+iterations=10
 LOGDIR="logs"
 mkdir -p "${LOGDIR}"
 
+iterations=$(expr ${iterations} - 1)
 # Here `s` in `<VAR>s` stand for plural
 # ++++++++----------++++++++++----------#
                                         ########################################
 vars=(
-"***+ppc64_cpu --smt"
--r="5"
--t="1"
--m="1 2"
-"=$(seq ${iterations})" # This should be the second last list for number of iterations
-"***+cat /proc/schedstat \>\> \${LOG_FILENAME}.schedstat.before" # This should be some command you want to run before or after run
-"***-cat /proc/schedstat \>\> \${LOG_FILENAME}.schedstat.after" # This should be some command you want to run before or after run
+***+SMT="8 4 1"
+-r="30"
+-t="1 2 4 8 16 24"
+-m="1 2 4 8 16 24"
+"=$(seq 0 ${iterations})" # This should be the second last list for number of iterations
+#"***+cat /proc/schedstat \>\> \${LOG_FILENAME}.schedstat.before" # This should be some command you want to run before or after run
+#"***-cat /proc/schedstat \>\> \${LOG_FILENAME}.schedstat.after" # This should be some command you want to run before or after run
 ### DUMMY POSITION for COMMAND - for understanding
 )
 
@@ -116,21 +117,29 @@ function startRun() {
       fi
     fi
   else
+    #PROGRAM_NAME=$(echo "${PROGRAM}"  | sed 's/.*\///')
+    #DETAILS=$(echo "${4}" | sed 's/_*\._*/\./' | sed 's/'$(echo -e '\033')'/'${ext}'/')
+    #LOG_FILENAME="${PROGRAM_NAME}.${DETAILS}"
+
     CMD="${PROGRAM} ${3}"
     LOGFILE="${4}".log
-    if [ ${TEST} -eq 1 ] ; then
+    if [ ${MODE} -eq 1 ] ; then
       echo "${LOGFILE}"
       EXEC "$CMD"
-    else
+    elif [ ${MODE} -eq 0 ] ; then
       EXEC "$CMD" 2>&1 >> "${LOGFILE}"
       cat "${LOGFILE}"
+      #sleep ${SLEEP}
       JUST_RAN=1
       return ${JUST_RAN}
+    elif [ ${MODE} -eq 2 ] ; then
+      #echo "${LOGFILE}"
+      ls "${LOGFILE}"
     fi
   fi
 )
 }
-if [ ${TEST} -eq 0 ] ; then
+if [ ${MODE} -eq 0 ] ; then
   head -c 80 /dev/zero | tr '\0' '=' ; echo
 fi
 # startRun <PROGRAM> <OPTION_INDEX> <PROGRAM-ARGS> <FILENAME>
