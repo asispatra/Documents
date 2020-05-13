@@ -22,7 +22,10 @@ def getData(data, level, newdata):
   global xcol
 
   if level < dims:
-    key_list=sorted(data.keys(), key=int)
+    try:
+      key_list=sorted(data.keys(), key=int)
+    except ValueError:
+      key_list=sorted(data.keys())
     key_len=len(key_list)
     for key in key_list:
       newdata[key] = {}
@@ -365,7 +368,7 @@ for row in reader:
         current[col] = {}
       current = current[col]
     else:
-      current[metrics[dims +1 -i]] = col
+      current[metrics[i - (dims +1)]] = col
     i = i + 1
  #print(data)
 
