@@ -9,25 +9,15 @@
 #
 #
 
-# schbench usage:
-#         -m (--message-threads): number of message threads (def: 2)
-#         -t (--threads): worker threads per message thread (def: 16)
-#         -r (--runtime): How long to run before exiting (seconds, def: 30)
-#         -s (--sleeptime): Message thread latency (usec, def: 10000
-#         -c (--cputime): How long to think during loop (usec, def: 10000
-#         -a (--auto): grow thread count until latencies hurt (def: off)
-#         -p (--pipe): transfer size bytes to simulate a pipe test (def: 0)
-#         -R (--rps): requests per second mode (count, def: 0)
-
 # Write your shell script here.
 
 source helper.sh
 
-MODE=0 # 0: RUN, 1: TEST, 2: DATA COLLECT
+MODE=1 # 0: RUN, 1: TEST, 2: DATA COLLECT
 SLEEP=5
 #JUST_RAN=0 # 1: TRUE, 0: FALSE
 
-iterations=10
+iterations=1
 LOGDIR="logs"
 mkdir -p "${LOGDIR}"
 
