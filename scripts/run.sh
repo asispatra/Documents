@@ -86,7 +86,7 @@ function startRun() {
       option=$(echo ${elm} | cut -d'=' -f 1)
       values=$(echo ${elm} | cut -d'=' -f 2)
       for value in ${values} ; do
-        PROGRAM_NAME=$(echo "${PROGRAM}"  | sed 's/.*\///')
+        PROGRAM_NAME=$(echo "${PROGRAM}"  | sed 's/.*\///' | cut -d ' ' -f 1)
         DETAILS=$(echo "${4}" | sed 's/_*\._*/\./')
         LOG_FILENAME="${LOGDIR}/${PROGRAM_NAME}.${DETAILS}.${ext}.${value}"
         startRun "${1}" $(expr $2 + 1) "${3}" "${LOG_FILENAME}"
