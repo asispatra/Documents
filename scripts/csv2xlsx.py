@@ -92,7 +92,7 @@ def getData(data, level, newdata):
     xrow = xrow + 1
 
 FORMULAs=['MIN', 'MAX', 'AVERAGE', 'GEOMEAN', 'MODE', '_xlfn.VAR.S', '_xlfn.STDEV.S']
-FORMULA_INDEX=4
+FORMULA_INDEX=2
 CUSTOM_FORMULAs=[
 [-1, '/', -7],
 [-1, '/', -6],
