@@ -22,7 +22,7 @@ DATAPATTERNS=(
 )
 
 # SMT,r,t,m
-DATA_FIELDS=(
+DDATA_FIELDS=(
 "SMT"
 "runtime(R)"
 "threads(T)"
@@ -30,9 +30,6 @@ DATA_FIELDS=(
 )
 DATA_FIELD_ORDERS=(
 "0 1 2 3" # Default
-"0 2 3 1"
-"1 2 3 0"
-"1 3 2 0"
 )
 
 BASE_REPORT="perfp9zz_schbench"
