@@ -48,7 +48,10 @@ def getData(data, level, newdata):
       for key in key_list:
         if xrow == bxrow:
           worksheet.write(xrow - 1, xcol, "Run%s" % (key), RC_caption_format)
-        worksheet.write(xrow, xcol, float(data[key][metric]), cell_format)
+        try:
+          worksheet.write(xrow, xcol, float(data[key][metric]), cell_format)
+        except ValueError:
+          worksheet.write(xrow, xcol, str(data[key][metric]), cell_format) 
         xcol = xcol + 1
       SROW = xrow
       SCOL = xcol - len(key_list)
