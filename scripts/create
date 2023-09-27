@@ -75,7 +75,7 @@ case $FL_N in
                 c_n=$(echo $FL_N | cut -d "." -f1)
                 P_C="class $c_n {\n${TS}public static void main(String[] args) {\n${TS}${TS}// Write your program code here. \n${TS}${TS}\n${TS}}\n}\n"
                 ;;
-        *.py)   F_L="#!/usr/bin/python\n\n#"
+        *.py)   F_L="#!/usr/bin/env python\n\n#"
                 L_S="# "
                 L_L="#"
                 P_C="# Write your python code here. \n"
